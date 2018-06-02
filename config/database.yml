@@ -1,0 +1,15 @@
+default: &default
+  development:
+  adapter: mysql2
+  encoding: utf8
+  username: root
+  password:
+  host: localhost
+
+development:
+  <<: *default
+  database: kisi_development
+
+test:
+  <<: *default
+  database: kisi_test_db
