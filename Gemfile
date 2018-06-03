@@ -29,6 +29,10 @@ gem 'jbuilder', '~> 2.5'
 
 gem 'google-cloud-pubsub', '~> 0.30.2'
 
+gem 'letter_opener', '~> 1.6'
+
+
+
 # Use ActiveStorage variant
 # gem 'mini_magick', '~> 4.8'
 
@@ -64,3 +68,5 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'delayed_job_active_record'
+gem 'appoptics-api-ruby', '~> 2.1', '>= 2.1.4'
+
