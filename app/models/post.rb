@@ -8,4 +8,9 @@ class Post < ApplicationRecord
 
   #Callbacks
   after_create :notify_subscribers
+
+  private
+    def notify_subscribers
+      NotifySubscriberJob.perform_later self
+    end
 end
