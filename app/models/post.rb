@@ -11,6 +11,6 @@ class Post < ApplicationRecord
 
   private
     def notify_subscribers
-      NotifySubscriberAboutNewPostJob.perform_later self
+      NotifySubscribersAboutNewPostJob.perform_later self
     end
 end
