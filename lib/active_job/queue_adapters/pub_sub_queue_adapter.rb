@@ -6,8 +6,7 @@ module ActiveJob
     class PubSubQueueAdapter
 
       def pubsub
-        @@pubsub ||= begin
-          debugger
+        @pubsub ||= begin
           project_id = Rails.application.secrets.google_pub_sub[:project_id]
           keyfile = Rails.application.config.root + Rails.application.secrets.google_pub_sub[:key_file_path]
           Google::Cloud::Pubsub.new project_id: project_id, keyfile: keyfile
@@ -15,14 +14,14 @@ module ActiveJob
       end
 
       def pubsub_topic
-        @@pubsub_topic ||= Rails.application.secrets.google_pub_sub[:topic]
+        @pubsub_topic ||= Rails.application.secrets.google_pub_sub[:topic]
       end
 
       def pubsub_subscription
-        @@pubsub_subscription ||= Rails.application.secrets.google_pub_sub[:subscription]
+        @pubsub_subscription ||= Rails.application.secrets.google_pub_sub[:subscription]
       end
 
-      def self.enqueue job
+      def enqueue job
         Rails.logger.info "[PubSubQueueAdapter] enqueue job #{job.inspect}"
         payload = { params: job.arguments, class: job.class.to_s }.to_json
         topic = pubsub.topic pubsub_topic
@@ -48,7 +47,7 @@ module ActiveJob
         subscriber.start
 
         # Fade into a deep sleep as worker will run indefinitely
-        sleep
+        # sleep
       end
       # [END pub_sub_worker]
 
