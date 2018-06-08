@@ -28,7 +28,7 @@
 
   <div class="field">
     <%= form.label :author_id, "Author" %>
-    <%= form.select(:subscription_ids,  Author.all.collect {|p| [ p.name, p.id ] }, { include_blank: true }) %>
+    <%= form.select(:author_id,  Author.all.collect {|p| [ p.name, p.id ] }, { include_blank: true }) %>
   </div>
 
   <div class="actions">
