@@ -1,5 +1,6 @@
 # [START pub_sub_enqueue]
 require "google/cloud/pubsub"
+require 'thread'
 
 module ActiveJob
   module QueueAdapters
@@ -35,21 +36,29 @@ module ActiveJob
         topic        = pubsub.topic pubsub_topic
         subscription = topic.subscription pubsub_subscription
 
+        mutex = Mutex.new
+
         subscriber = subscription.listen do |message|
-          message.acknowledge!
-          data = JSON.parse(message.attributes["data"])
-          data['class'].constantize.send :perform_now, *data['params']
-          puts "#{ data['class'] } Job performed!!"
-          Rails.logger.info "#{ data['class'] } Job performed!!"
+          mutex.synchronize { process_job(message) }
         end
 
         # Start background threads that will call block passed to listen.
         subscriber.start
 
         # Fade into a deep sleep as worker will run indefinitely
-        # sleep
+        sleep
       end
       # [END pub_sub_worker]
+
+      def process_job(message)
+        message.acknowledge!
+        data = JSON.parse(message.attributes["data"])
+        data['class'].constantize.send :perform_now, *data['params']
+        puts "#{ data['class'] } Job performed!!"
+        Rails.logger.info "#{ data['class'] } Job performed!!"
+        Thread.current.exit
+      end
+
 
     end
   end
