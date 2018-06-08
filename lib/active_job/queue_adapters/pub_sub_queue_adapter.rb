@@ -14,8 +14,12 @@ module ActiveJob
         end
       end
 
-      def pubsub_topic
-        @pubsub_topic ||= Rails.application.secrets.google_pub_sub[:topic]
+      def jobs_queue
+        @jobs_queue ||= Rails.application.secrets.google_pub_sub[:topic]
+      end
+
+      def morgue_queue
+        @morgue_queue = Rails.application.secrets.google_pub_sub[:morgue_topic]
       end
 
       def pubsub_subscription
@@ -24,41 +28,48 @@ module ActiveJob
 
       def enqueue job
         Rails.logger.info "[PubSubQueueAdapter] enqueue job #{job.inspect}"
-        payload = { params: job.arguments, class: job.class.to_s }.to_json
-        topic = pubsub.topic pubsub_topic
-        topic.publish data: payload
+        payload = { params: job.arguments, class: job.class.to_s, attempts: 0 }
+        publish_message(jobs_queue, payload)
       end
-# [END pub_sub_enqueue]
 
-      # [START pub_sub_worker]
+      def publish_message(topic, payload)
+        topic = pubsub.topic topic
+        topic.publish data: payload.to_json
+      end
+
+
       def run_worker!
         Rails.logger.info "Running worker to lookup book details"
-        topic        = pubsub.topic pubsub_topic
+        topic        = pubsub.topic jobs_queue
         subscription = topic.subscription pubsub_subscription
 
         mutex = Mutex.new
 
         subscriber = subscription.listen do |message|
-          mutex.synchronize { process_job(message) }
+          job_callback(message, mutex)
         end
-
-        # Start background threads that will call block passed to listen.
         subscriber.start
-
-        # Fade into a deep sleep as worker will run indefinitely
         sleep
       end
-      # [END pub_sub_worker]
 
-      def process_job(message)
+      def job_callback(message, mutex)
         message.acknowledge!
-        data = JSON.parse(message.attributes["data"])
-        data['class'].constantize.send :perform_now, *data['params']
-        puts "#{ data['class'] } Job performed!!"
-        Rails.logger.info "#{ data['class'] } Job performed!!"
+        mutex.synchronize { process_job(message, mutex) }
         Thread.current.exit
       end
 
+      def process_job(message, mutex)
+        data = JSON.parse(message.attributes["data"])
+        begin
+          data['attempts'] += 1
+          data['class'].constantize.send :perform_now, *data['params']
+          puts "#{ data['class'] } Job performed!!"
+          Rails.logger.info "#{ data['class'] } Job performed!!"
+        rescue Exception => e
+          queue = data['attempts'] > 2 ?  morgue_queue : jobs_queue
+          publish_message(queue, data)
+        end
+      end
 
     end
   end
