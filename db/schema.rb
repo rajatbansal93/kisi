@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_06_03_085814) do
+ActiveRecord::Schema.define(version: 2018_06_02_062845) do
 
   create_table "authors", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
@@ -24,21 +24,6 @@ ActiveRecord::Schema.define(version: 2018_06_03_085814) do
     t.bigint "subscriber_id"
     t.index ["author_id"], name: "index_authors_subscribers_on_author_id"
     t.index ["subscriber_id"], name: "index_authors_subscribers_on_subscriber_id"
-  end
-
-  create_table "delayed_jobs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.integer "priority", default: 0, null: false
-    t.integer "attempts", default: 0, null: false
-    t.text "handler", null: false
-    t.text "last_error"
-    t.datetime "run_at"
-    t.datetime "locked_at"
-    t.datetime "failed_at"
-    t.string "locked_by"
-    t.string "queue"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
   create_table "posts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
