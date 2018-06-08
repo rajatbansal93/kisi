@@ -1,6 +1,6 @@
 class Post < ApplicationRecord
   #validations
-  validates :name, :title, :content, presence: true
+  validates :name, :title, :content, :author, presence: true
   validates :name, uniqueness: true
 
   #Associations

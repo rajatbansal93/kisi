@@ -1,0 +1,15 @@
+default: &default
+  development:
+  adapter:
+  encoding:
+  username:
+  password:
+  host:
+
+development:
+  <<: *default
+  database: kisi_development
+
+test:
+  <<: *default
+  database: kisi_test_db

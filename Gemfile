@@ -8,7 +8,6 @@ gem 'rails', '~> 5.2.0'
 gem 'appoptics-api-ruby',                  '~> 2.1', '>= 2.1.4'
 gem 'bootsnap',                            '>= 1.1.0', require: false
 gem 'coffee-rails',                        '~> 4.2'
-gem 'delayed_job_active_record'
 gem 'google-cloud-pubsub',                 '~> 0.30.2'
 gem 'jbuilder',                            '~> 2.5'
 gem 'letter_opener',                       '~> 1.6'

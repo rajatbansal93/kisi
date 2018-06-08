@@ -1,7 +1,9 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
+Author.find_or_create_by(name: 'Carl', email: 'carl@kisi.io')
+
+author = Author.find_by_name('Carl')
+
+subscribers_list = [ [ 'Rajat', 'rajat.usict@gmail.com' ], [ 'Christina', 'christina.schmid@getkisi.com' ] ]
+
+subscribers_list.each do |name, email|
+  author.subscribers.find_or_create_by(name: name, email: email)
+end
